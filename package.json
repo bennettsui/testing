@@ -1,0 +1,22 @@
+{
+  "name": "social-research-api-v1",
+  "version": "1.0.0",
+  "description": "Social media campaign research API powered by Claude AI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://local_proxy@127.0.0.1:20209/git/bennettsui/testing"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.2",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1"
+  }
+}
