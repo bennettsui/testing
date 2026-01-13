@@ -1,0 +1,18 @@
+{
+  "name": "social-research-api-v1",
+  "version": "1.0.0",
+  "description": "Social Research API with Express and Anthropic AI SDK",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": ["express", "api", "anthropic", "research"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "express": "^4.18.2",
+    "dotenv": "^16.3.1"
+  }
+}
