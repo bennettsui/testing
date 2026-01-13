@@ -150,7 +150,7 @@ Respond with ONLY the JSON object, no additional text.`;
     // Call Claude API
     const message = await anthropic.messages.create({
       model: process.env.CLAUDE_MODEL || 'claude-3-opus-20240229',
-      max_tokens: 16000,
+      max_tokens: 4096,
       messages: [
         {
           role: 'user',
