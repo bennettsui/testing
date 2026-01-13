@@ -1,0 +1,17 @@
+{
+  "name": "cafehk-api",
+  "version": "1.0.0",
+  "description": "Node.js + Express API for campaign research with Claude AI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["express", "claude", "api"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "@anthropic-ai/sdk": "^0.27.0",
+    "dotenv": "^16.3.1"
+  }
+}
