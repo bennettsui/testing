@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Research Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            align-items: flex-end;
+        }
+
+        .message.assistant {
+            align-items: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 80%;
+            padding: 15px 20px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            line-height: 1.6;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.assistant .message-bubble {
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .message-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .market-direction {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .section-title {
+            color: #667eea;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 20px 0 10px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .trends-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .trends-list li {
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+            transition: transform 0.2s ease;
+        }
+
+        .trends-list li:hover {
+            transform: translateX(5px);
+            background: #e9ecef;
+        }
+
+        .competitor {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .competitor:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .competitor-name {
+            color: #764ba2;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .competitor-details {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .loading-indicator {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 18px;
+            border: 1px solid #e0e0e0;
+            max-width: 150px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .loading-indicator.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .input-container {
+            padding: 20px 30px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        #user-input:focus {
+            border-color: #667eea;
+        }
+
+        #send-button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            min-width: 100px;
+        }
+
+        #send-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #send-button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        #send-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #666;
+            padding: 40px 20px;
+            font-size: 16px;
+        }
+
+        .welcome-message h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+
+        .error-message {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+            }
+
+            .container {
+                height: 100vh;
+                border-radius: 0;
+                max-width: 100%;
+            }
+
+            .header {
+                padding: 20px;
+                font-size: 20px;
+            }
+
+            .chat-container {
+                padding: 20px;
+            }
+
+            .message-bubble {
+                max-width: 90%;
+            }
+
+            .input-container {
+                padding: 15px 20px;
+                gap: 10px;
+            }
+
+            #user-input {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+
+            #send-button {
+                padding: 12px 20px;
+                min-width: 80px;
+                font-size: 14px;
+            }
+
+            .section-title {
+                font-size: 16px;
+            }
+
+            .welcome-message {
+                padding: 30px 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .message-bubble {
+                max-width: 95%;
+            }
+
+            #send-button {
+                min-width: 60px;
+                padding: 12px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            Social Research Assistant
+        </div>
+
+        <div class="chat-container" id="chat-container">
+            <div class="welcome-message">
+                <h2>Welcome to Social Research Assistant!</h2>
+                <p>Ask me about trends, competitors, or market insights to get started.</p>
+            </div>
+        </div>
+
+        <div class="input-container">
+            <input
+                type="text"
+                id="user-input"
+                placeholder="Ask me about trends, competitors, or market insights..."
+                autocomplete="off"
+            />
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const API_URL = 'https://social-research-api-v3.fly.dev/api/research';
+
+        // Remove welcome message on first interaction
+        function removeWelcomeMessage() {
+            const welcomeMsg = document.querySelector('.welcome-message');
+            if (welcomeMsg) {
+                welcomeMsg.remove();
+            }
+        }
+
+        // Add user message to chat
+        function addUserMessage(message) {
+            removeWelcomeMessage();
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user';
+            messageDiv.innerHTML = `
+                <span class="message-label">You</span>
+                <div class="message-bubble">${escapeHtml(message)}</div>
+            `;
+            chatContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Add loading indicator
+        function addLoadingIndicator() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message assistant';
+            loadingDiv.innerHTML = `
+                <span class="message-label">Assistant</span>
+                <div class="loading-indicator active">
+                    <div class="spinner"></div>
+                    <span class="loading-text">Thinking...</span>
+                </div>
+            `;
+            loadingDiv.id = 'loading-indicator';
+            chatContainer.appendChild(loadingDiv);
+            scrollToBottom();
+        }
+
+        // Remove loading indicator
+        function removeLoadingIndicator() {
+            const loadingDiv = document.getElementById('loading-indicator');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+        }
+
+        // Format API response
+        function formatResponse(data) {
+            let html = '';
+
+            // Market Direction
+            if (data.marketDirection) {
+                html += `<div class="market-direction">📊 Market Direction: ${escapeHtml(data.marketDirection)}</div>`;
+            }
+
+            // Trends
+            if (data.trends && data.trends.length > 0) {
+                html += '<div class="section-title">🔥 Key Trends</div>';
+                html += '<ul class="trends-list">';
+                data.trends.forEach(trend => {
+                    html += `<li>${escapeHtml(trend)}</li>`;
+                });
+                html += '</ul>';
+            }
+
+            // Top Competitors
+            if (data.topCompetitors && data.topCompetitors.length > 0) {
+                html += '<div class="section-title">🏆 Top Competitors</div>';
+                data.topCompetitors.forEach(competitor => {
+                    html += '<div class="competitor">';
+                    html += `<div class="competitor-name">${escapeHtml(competitor.name || 'Unknown')}</div>`;
+                    html += '<div class="competitor-details">';
+                    if (competitor.marketShare) {
+                        html += `<strong>Market Share:</strong> ${escapeHtml(competitor.marketShare)}<br>`;
+                    }
+                    if (competitor.strength) {
+                        html += `<strong>Strength:</strong> ${escapeHtml(competitor.strength)}<br>`;
+                    }
+                    if (competitor.description) {
+                        html += `<strong>Description:</strong> ${escapeHtml(competitor.description)}`;
+                    }
+                    html += '</div></div>';
+                });
+            }
+
+            // Additional insights
+            if (data.insights) {
+                html += '<div class="section-title">💡 Insights</div>';
+                html += `<div style="padding: 10px 0; line-height: 1.8;">${escapeHtml(data.insights)}</div>`;
+            }
+
+            // Summary
+            if (data.summary) {
+                html += '<div class="section-title">📝 Summary</div>';
+                html += `<div style="padding: 10px 0; line-height: 1.8;">${escapeHtml(data.summary)}</div>`;
+            }
+
+            return html || '<p>No data available in the response.</p>';
+        }
+
+        // Add assistant message to chat
+        function addAssistantMessage(content) {
+            removeLoadingIndicator();
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message assistant';
+            messageDiv.innerHTML = `
+                <span class="message-label">Assistant</span>
+                <div class="message-bubble">${content}</div>
+            `;
+            chatContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Add error message
+        function addErrorMessage(error) {
+            removeLoadingIndicator();
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message assistant';
+            messageDiv.innerHTML = `
+                <span class="message-label">Assistant</span>
+                <div class="message-bubble">
+                    <div class="error-message">
+                        <strong>⚠️ Error:</strong> ${escapeHtml(error)}
+                    </div>
+                </div>
+            `;
+            chatContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Scroll to bottom of chat
+        function scrollToBottom() {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Send message to API
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            // Disable input and button
+            userInput.disabled = true;
+            sendButton.disabled = true;
+
+            // Add user message
+            addUserMessage(message);
+            userInput.value = '';
+
+            // Show loading indicator
+            addLoadingIndicator();
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: message
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const formattedResponse = formatResponse(data);
+                addAssistantMessage(formattedResponse);
+
+            } catch (error) {
+                console.error('Error:', error);
+                addErrorMessage(error.message || 'Failed to connect to the API. Please try again.');
+            } finally {
+                // Re-enable input and button
+                userInput.disabled = false;
+                sendButton.disabled = false;
+                userInput.focus();
+            }
+        }
+
+        // Event listeners
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Focus input on load
+        userInput.focus();
+    </script>
+</body>
+</html>
