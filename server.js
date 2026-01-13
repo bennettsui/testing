@@ -1,10 +1,16 @@
 require('dotenv').config();
 const express = require('express');
 const Anthropic = require('@anthropic-ai/sdk');
+const cors = require('cors');
 
 const app = express();
 const PORT = 3000;
 
+app.use(cors({
+  origin: 'https://bennettsui.github.io',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
+}));
 app.use(express.json());
 
 const anthropic = new Anthropic({
