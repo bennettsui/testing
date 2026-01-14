@@ -12,6 +12,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type']
 }));
 app.use(express.json());
+app.use(express.static('public'));
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
