@@ -13,7 +13,7 @@ Node.js + Express API for generating campaign research using Claude AI.
    Create a `.env` file with:
    ```
    ANTHROPIC_API_KEY=your_api_key_here
-   CLAUDE_MODEL=claude-3-5-sonnet-20241022
+   CLAUDE_MODEL=claude-3-5-sonnet-latest
    ```
 
 3. Start the server:
